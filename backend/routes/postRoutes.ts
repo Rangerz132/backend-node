@@ -6,13 +6,14 @@ import {
 	updatePost,
 	deletePost,
 } from "../controllers/postController";
+import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
-router.get("/", getPosts);
-router.get("/:id", getPostById);
-router.post("/", createPost);
-router.put("/:id", updatePost);
-router.delete("/:id", deletePost);
+router.get("/", asyncHandler(getPosts));
+router.get("/:id", asyncHandler(getPostById));
+router.post("/", asyncHandler(createPost));
+router.put("/:id", asyncHandler(updatePost));
+router.delete("/:id", asyncHandler(deletePost));
 
 export default router;

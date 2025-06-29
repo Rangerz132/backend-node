@@ -1,0 +1,21 @@
+datasource db {
+  provider = "sqlite"       // or "postgresql", "mysql", etc.
+  url      = "file:./dev.db" // For SQLite, a local file; change if you use other DBs
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Post {
+  id      Int     @id @default(autoincrement())
+  title   String
+  content String
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  lastName String
+  age      Int
+}

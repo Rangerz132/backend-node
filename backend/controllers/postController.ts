@@ -1,30 +1,29 @@
 import { Request, Response, NextFunction } from "express";
 import * as PostModel from "../models/postModel";
 
-export const getPosts = (
+export const getPosts = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-): void => {
+) => {
 	try {
-		const posts = PostModel.getAllPosts();
+		const posts = await PostModel.getAllPosts();
 		res.json(posts);
 	} catch (err) {
 		next(err);
 	}
 };
 
-export const getPostById = (
+export const getPostById = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-): void => {
+) => {
 	try {
 		const id = parseInt(req.params.id);
-		const post = PostModel.getPostById(id);
+		const post = await PostModel.getPostById(id);
 		if (!post) {
-			res.status(404).send("Post not found");
-			return;
+			return res.status(404).send("Post not found");
 		}
 		res.json(post);
 	} catch (err) {
@@ -32,11 +31,11 @@ export const getPostById = (
 	}
 };
 
-export const createPost = (
+export const createPost = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-): void => {
+) => {
 	try {
 		const { title, content } = req.body;
 		if (
@@ -45,21 +44,20 @@ export const createPost = (
 			!content ||
 			typeof content !== "string"
 		) {
-			res.status(400).send("Invalid title or content");
-			return;
+			return res.status(400).send("Invalid title or content");
 		}
-		const newPost = PostModel.addPost({ title, content });
+		const newPost = await PostModel.addPost({ title, content });
 		res.status(201).json(newPost);
 	} catch (err) {
 		next(err);
 	}
 };
 
-export const updatePost = (
+export const updatePost = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-): void => {
+) => {
 	try {
 		const id = parseInt(req.params.id);
 		const { title, content } = req.body;
@@ -69,13 +67,11 @@ export const updatePost = (
 			!content ||
 			typeof content !== "string"
 		) {
-			res.status(400).send("Invalid title or content");
-			return;
+			return res.status(400).send("Invalid title or content");
 		}
-		const updated = PostModel.updatePost(id, { title, content });
+		const updated = await PostModel.updatePost(id, { title, content });
 		if (!updated) {
-			res.status(404).send("Post not found");
-			return;
+			return res.status(404).send("Post not found");
 		}
 		res.json(updated);
 	} catch (err) {
@@ -83,17 +79,16 @@ export const updatePost = (
 	}
 };
 
-export const deletePost = (
+export const deletePost = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-): void => {
+) => {
 	try {
 		const id = parseInt(req.params.id);
-		const removed = PostModel.deletePost(id);
+		const removed = await PostModel.deletePost(id);
 		if (!removed) {
-			res.status(404).send("Post not found");
-			return;
+			return res.status(404).send("Post not found");
 		}
 		res.status(204).send();
 	} catch (err) {

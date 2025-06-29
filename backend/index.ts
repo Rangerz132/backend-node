@@ -2,6 +2,7 @@ import express from "express";
 import postRoutes from "./routes/postRoutes";
 import { logger } from "./middlewares/logger";
 import { errorHandler } from "./middlewares/errorHandler";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use("/", (req, res) => {
 });
 
 app.use("/posts", postRoutes);
+app.use("/users", userRoutes);
 
 app.use(errorHandler);
 

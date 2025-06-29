@@ -1,37 +1,38 @@
-export interface Post {
-	id: number;
-	title: string;
-	content: string;
-}
+import { PrismaClient, Post } from "@prisma/client";
 
-let posts: Post[] = [
-	{ id: 1, title: "First Post", content: "This is the first post." },
-];
+const prisma = new PrismaClient();
 
-export const getAllPosts = (): Post[] => posts;
-
-export const getPostById = (id: number): Post | undefined => {
-	return posts.find((post) => post.id === id);
+export const getAllPosts = async (): Promise<Post[]> => {
+	return await prisma.post.findMany();
 };
 
-export const addPost = (post: Omit<Post, "id">): Post => {
-	const newPost: Post = { id: Date.now(), ...post };
-	posts.push(newPost);
-	return newPost;
+export const getPostById = async (id: number): Promise<Post | null> => {
+	return await prisma.post.findUnique({ where: { id } });
 };
 
-export const updatePost = (
+export const addPost = async (post: Omit<Post, "id">): Promise<Post> => {
+	return await prisma.post.create({ data: post });
+};
+
+export const updatePost = async (
 	id: number,
 	updatedFields: Partial<Omit<Post, "id">>
-): Post | null => {
-	const index = posts.findIndex((post) => post.id === id);
-	if (index === -1) return null;
-	posts[index] = { ...posts[index], ...updatedFields };
-	return posts[index];
+): Promise<Post | null> => {
+	try {
+		return await prisma.post.update({
+			where: { id },
+			data: updatedFields,
+		});
+	} catch {
+		return null; // if post with id does not exist
+	}
 };
 
-export const deletePost = (id: number): boolean => {
-	const originalLength = posts.length;
-	posts = posts.filter((post) => post.id !== id);
-	return posts.length < originalLength;
+export const deletePost = async (id: number): Promise<boolean> => {
+	try {
+		await prisma.post.delete({ where: { id } });
+		return true;
+	} catch {
+		return false;
+	}
 };
